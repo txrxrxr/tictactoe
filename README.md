@@ -1,4 +1,4 @@
 # tictactoe
 
-A simple tictactoe implementation to be used as a basis for CMPUT 402 assignments on collaborative software development.
+A simple tictactoe implementation used to demo certain concepts and tools for CMPUT 402
 
