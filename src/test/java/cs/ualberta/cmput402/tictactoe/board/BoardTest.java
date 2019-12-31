@@ -1,3 +1,5 @@
+package cs.ualberta.cmput402.tictactoe.board;
+
 import cs.ualberta.cmput402.tictactoe.board.Board;
 import cs.ualberta.cmput402.tictactoe.board.exceptions.InvalidMoveException;
 import org.junit.Before;
