@@ -16,9 +16,34 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
-
-
+        <!-- Annotations from the Checker Framework: nullness, interning, locking, ... -->
+        <dependency>
+            <groupId>org.checkerframework</groupId>
+            <artifactId>checker-qual</artifactId>
+            <version>3.0.1</version>
+        </dependency>
+        <!-- If using JDK 8, add the following additional dependencies -->
+        <dependency>
+            <groupId>org.checkerframework</groupId>
+            <artifactId>jdk8</artifactId>
+            <version>3.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.errorprone</groupId>
+            <artifactId>javac</artifactId>
+            <version>9+181-r4173-1</version>
+        </dependency>
     </dependencies>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <!-- These properties will be set by the Maven Dependency plugin -->
+        <annotatedJdk>${org.checkerframework:jdk8:jar}</annotatedJdk>
+        <errorProneJavac>${com.google.errorprone:javac:jar}</errorProneJavac>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
@@ -34,7 +59,58 @@
                     </targetTests>
                 </configuration>
             </plugin>
+            <plugin>
+                <!-- This plugin will set properties values using dependency information -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>properties</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+                <configuration>
+                    <fork>true</fork>
+                    <!-- If using JDK 8, add source and target. -->
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <!-- If using JDK 11, remove source and target and uncomment "release" below. -->
+                    <!-- <release>11</release> -->
+                    <compilerArguments>
+                        <Xmaxerrs>10000</Xmaxerrs>
+                        <Xmaxwarns>10000</Xmaxwarns>
+                    </compilerArguments>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.checkerframework</groupId>
+                            <artifactId>checker</artifactId>
+                            <version>3.0.1</version>
+                        </path>
+                    </annotationProcessorPaths>
+                    <!--<annotationProcessors>-->
+                        <!--&lt;!&ndash; Add all the checkers you want to enable here &ndash;&gt;-->
+                        <!--&lt;!&ndash;<annotationProcessor>org.checkerframework.checker.nullness.NullnessChecker</annotationProcessor>&ndash;&gt;-->
+                    <!--</annotationProcessors>-->
+                    <compilerArgs>
+                        <!-- If using JDK 8, use only the two arguments immediately below. -->
+                        <arg>-J-Xbootclasspath/p:${errorProneJavac}</arg>
+                        <arg>-Xbootclasspath/p:${annotatedJdk}</arg>
+                        <!-- If using JDK 11, remove the two arguments above, remove the
+                             space in the one below, and uncomment it. -->
+                        <!-- <arg>-J- -add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED</arg> -->
+
+                        <!-- Optionally, -Awarns turns type-checking errors into warnings. -->
+                        <!-- <arg>-Awarns</arg> -->
+                    </compilerArgs>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
+
     
 </project>
